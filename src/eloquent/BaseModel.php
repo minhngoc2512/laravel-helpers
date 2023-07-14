@@ -10,6 +10,7 @@ trait BaseModel
         $model = $model::select(self::alias(Helper::BaseApiRequest()->getFields()));
         if (Helper::BaseApiRequest()->getWhere()) $model = self::whereQueryBuilder(Helper::BaseApiRequest()->getWhere(), $model);
         if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
+        if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model,Helper::BaseApiRequest()->getKeywordSearch(),Helper::BaseApiRequest()->getFieldSearch());
         return $model;
     }
 

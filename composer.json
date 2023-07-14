@@ -1,0 +1,21 @@
+{
+    "name": "ngocnm/laravel_helpers",
+    "description": "LaravelHelper",
+    "type": "library",
+    "require": {
+        "laravel/framework": ">8.*",
+        "php": "7.0"
+    },
+    "license": "LGPL-2.1-only",
+    "autoload": {
+        "psr-4": {
+            "Ngocnm\\LaravelHelpers\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Minh Ngoc",
+            "email": "minhngoc2512@yahoo.com"
+        }
+    ]
+}

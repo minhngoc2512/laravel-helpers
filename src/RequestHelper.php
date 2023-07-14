@@ -55,7 +55,7 @@ class RequestHelper
         } else {
             $this->offset = $this->limit * $this->page - $this->limit;
         }
-        if(Request::has('field_search')&&Request::has('keyword')){
+        if(Request::has('field_search')&&Request::has('keyword')&&!empty(Request::input('keyword'))){
             $keyword = StringHelper::filter(Request::input('keyword'));
             if(!empty($keyword)){
                 $this->keyword = $keyword;

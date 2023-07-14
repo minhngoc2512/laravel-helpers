@@ -3,7 +3,7 @@
     "description": "LaravelHelper",
     "type": "library",
     "require": {
-        "laravel/framework": "=>8.*",
+        "laravel/framework": "=>8.75",
         "php": "7.0"
     },
     "license": "LGPL-2.1-only",

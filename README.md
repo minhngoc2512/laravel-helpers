@@ -2,6 +2,43 @@
 ```bash
 composer require ngocnm/laravel_helpers
 ```
+### Cấu hình trong ``model``
+
+```php 
+namespace App\Models;
+class User {
+    static $schema = [
+        "id" => [
+            "type" => "int",
+            "insert" => false,
+            "query_condition" => true,
+            "sort" => true
+        ],
+        "created_at" => [
+            "type" => "string",
+            "insert" => false,
+            "query_condition" => false,
+            "required_when_create" => false,
+            "sort" => true
+        ],
+        "updated_at" => [
+            "type" => "string",
+            "insert" => false,
+            "query_condition" => false,
+            "required_when_create" => false,
+            "sort" => true
+        ]
+    ];
+}
+```
+
+Note:
+-  ``type``: Kiểu dữ liệu, bao gồm: ``int``,``string``,``double``
+- ``insert``: Có được thêm dữ liệu từ request param hay không
+- ``query_condition``: Truy vấn có điều khiện 
+- ``required_when_create``: Yêu cầu bắt buộc với validate request
+- ``sort``: Truy vấn ``order by``
+
 ### Lọc request cho api
 - Trong file ``app/Http/Kernel.php``, thêm middleware cho api:
 ```php

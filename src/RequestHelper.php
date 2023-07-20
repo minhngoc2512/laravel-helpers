@@ -40,7 +40,7 @@ class RequestHelper
         if (Request::has('where')) $this->where = urldecode(Request::input('where'));
         if (Request::has('where_in')) $this->where_in = urldecode(Request::input('where_in'));
         if (Request::has('where_range')) $this->where_range = urldecode(Request::input('where_range'));
-        if (Request::has('order_by')) $this->order_by = Request::input('order_by');
+        if (Request::has('order_by')) $this->order_by = urldecode(Request::input('order_by'));
         if (Request::has('with')) $this->with = trim(urldecode(Request::input('with')));
         if (Request::has('limit')) {
             $limit = (int)Request::input('limit');

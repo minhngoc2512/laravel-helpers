@@ -11,6 +11,7 @@ trait BaseModel
         if (Helper::BaseApiRequest()->getWhere()) $model = self::whereQueryBuilder(Helper::BaseApiRequest()->getWhere(), $model);
         if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
         if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model,Helper::BaseApiRequest()->getKeywordSearch(),Helper::BaseApiRequest()->getFieldSearch());
+        if (Helper::BaseApiRequest()->getOrderBy()) $model = self::orderByQueryBuilder(Helper::BaseApiRequest()->getOrderBy(), $model);
         return $model;
     }
 
@@ -105,6 +106,27 @@ trait BaseModel
             if (isset($data['insert']) && $data['insert'] === true) $fillable[] = $field;
         }
         return $fillable;
+    }
+
+    static function orderByQueryBuilder($order_by, $model)
+    {
+        if (empty(self::$schema)) {
+            throw new \Exception(self::class . ': Model class not define $field_schema');
+        }
+        $options = explode(',', $order_by);
+        foreach ($options as $value) {
+            list($field, $type_order) = explode(" ", $value);
+            if (empty($type_order) || !in_array($type_order, ['asc', 'desc'])) continue;
+            if (!key_exists($field, self::$schema)
+                || !isset(self::$schema[$field]['sort'])
+                || self::$schema[$field]['sort'] != true) {
+                continue;
+            }
+
+            $model->orderBy($field, $type_order);
+
+        }
+        return $model;
     }
 
 }

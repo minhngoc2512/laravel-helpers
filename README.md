@@ -81,3 +81,10 @@ $model = UserLog::baseQueryBuilder(UserLog::class);//add line
 ...
 $model = $model->get();
 ```
+
+- Cấu hình ``limit_max`` , ``page_max``;
+
+```php
+Ngocnm\LaravelHelpers\Helper::BaseApiRequest()->setLimitMax(100);
+Ngocnm\LaravelHelpers\Helper::BaseApiRequest()->setPageMax(100);
+```

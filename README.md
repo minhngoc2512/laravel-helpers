@@ -2,6 +2,16 @@
 ```bash
 composer require ngocnm/laravel_helpers
 ```
+### Cấu hình 
+- Register Service Provider
+```php
+Ngocnm\LaravelHelpers\HelperServiceProvider::class
+```
+- Publish config file config/helper.php
+```php 
+php artisan vendor:publish --tag=helper_config
+```
+
 ### Cấu hình trong ``model``
 
 ```php 

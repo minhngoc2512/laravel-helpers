@@ -17,6 +17,10 @@ class RequestHelper
     private $where_in = null;
     private $where_range = null;
     private $limit = 30;
+
+    private $limit_max = 100;
+
+    private $page_max = 100;
     private $offset = 0;
     private $order_by = null;
     private $with = null;
@@ -29,7 +33,7 @@ class RequestHelper
     {
         if (Request::has('page')) {
             $page = (int)Request::input('page');
-            if ($page < 1 || $page > 100) {
+            if ($page < 1 || $page > $this->page_max) {
                 $this->page = 1;
             } else {
                 $this->page = $page;
@@ -44,7 +48,7 @@ class RequestHelper
         if (Request::has('with')) $this->with = trim(urldecode(Request::input('with')));
         if (Request::has('limit')) {
             $limit = (int)Request::input('limit');
-            if ($limit < 1 || $limit > 100) {
+            if ($limit < 1 || $limit > $this->limit_max) {
                 $this->limit = 30;
             } else {
                 $this->limit = (int)Request::input('limit');
@@ -113,5 +117,13 @@ class RequestHelper
 
     public function getKeywordSearch(){
         return $this->keyword;
+    }
+
+    public function setLimitMax(int $limit){
+        $this->limit_max = $limit;
+    }
+
+    public function setPageMax(int $page){
+        $this->page_max = $page;
     }
 }

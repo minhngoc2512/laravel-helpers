@@ -14,6 +14,8 @@ class RequestHelper
     private $fields = '*';
 
     private $where = null;
+
+    private $where_not = null;
     private $where_in = null;
     private $where_range = null;
     private $limit = 30;
@@ -38,6 +40,7 @@ class RequestHelper
 
         if (Request::has('fields')) $this->fields = Request::input('fields');
         if (Request::has('where')) $this->where = urldecode(Request::input('where'));
+        if (Request::has('where_not')) $this->where_not = urldecode(Request::input('where_not'));
         if (Request::has('where_in')) $this->where_in = urldecode(Request::input('where_in'));
         if (Request::has('where_range')) $this->where_range = urldecode(Request::input('where_range'));
         if (Request::has('order_by')) $this->order_by = urldecode(Request::input('order_by'));
@@ -78,6 +81,12 @@ class RequestHelper
     {
         return $this->where;
     }
+
+    public function getWhereNot()
+    {
+        return $this->where_not;
+    }
+
     public function getWhereIn()
     {
         return $this->where_in;

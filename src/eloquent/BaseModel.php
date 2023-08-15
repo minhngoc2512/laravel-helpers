@@ -1,6 +1,7 @@
 <?php
 
 namespace Ngocnm\LaravelHelpers\eloquent;
+
 use Ngocnm\LaravelHelpers\Helper;
 
 trait BaseModel
@@ -8,9 +9,10 @@ trait BaseModel
     static function baseQueryBuilder($model)
     {
         $model = $model::select(self::alias(Helper::BaseApiRequest()->getFields()));
+        if (Helper::BaseApiRequest()->getWhereNot()) $model = self::whereNotQueryBuilder(Helper::BaseApiRequest()->getWhereNot(), $model);
         if (Helper::BaseApiRequest()->getWhere()) $model = self::whereQueryBuilder(Helper::BaseApiRequest()->getWhere(), $model);
         if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
-        if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model,Helper::BaseApiRequest()->getKeywordSearch(),Helper::BaseApiRequest()->getFieldSearch());
+        if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model, Helper::BaseApiRequest()->getKeywordSearch(), Helper::BaseApiRequest()->getFieldSearch());
         if (Helper::BaseApiRequest()->getOrderBy()) $model = self::orderByQueryBuilder(Helper::BaseApiRequest()->getOrderBy(), $model);
         return $model;
     }
@@ -63,6 +65,39 @@ trait BaseModel
         return $model;
     }
 
+    static function whereNotQueryBuilder($where, $model)
+    {
+        if (empty(self::$schema)) {
+            throw new \Exception(self::class . ': Model class not define $field_schema');
+        }
+        $options = explode(',', $where);
+        foreach ($options as $value) {
+            $value = explode(" ", $value);
+            if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
+                $data_column = self::$schema[$value[0]];
+                $type = $data_column['type'];
+                $column_name = $value[0];
+                switch ($type) {
+                    case 'int':
+                        $value[1] = (int)$value[1];
+                        $model = $model->where($column_name, '!=', $value[1]);
+                        break;
+                    case 'double':
+                        $value[1] = (double)$value[1];
+                        $model = $model->where($column_name, '!=', $value[1]);
+                        break;
+                    case 'string':
+                        $value[1] = trim($value[1]);
+                        if (in_array($value[1], $data_column['values'])) {
+                            $model = $model->where($column_name, '!=', $value[1]);
+                        }
+                        break;
+                }
+            }
+        }
+        return $model;
+    }
+
     static function withQueryBuilder($with, $model)
     {
         $with = explode("-", $with);
@@ -92,7 +127,7 @@ trait BaseModel
             key_exists($field, self::$schema)
             && !empty($keyword)
             && isset(self::$schema[$field]['fulltext_search'])
-            && self::$schema[$field]['fulltext_search']==true
+            && self::$schema[$field]['fulltext_search'] == true
         ) {
             return $model->whereRaw("MATCH($field) AGAINST('$keyword')");
         }

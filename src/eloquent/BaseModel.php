@@ -8,7 +8,7 @@ trait BaseModel
 {
     static function baseQueryBuilder($model)
     {
-        $model = $model::select(self::alias(Helper::BaseApiRequest()->getFields()));
+        $model = $model::select(self::alias((new $model)->table,Helper::BaseApiRequest()->getFields()));
         if (Helper::BaseApiRequest()->getWhereNot()) $model = self::whereNotQueryBuilder(Helper::BaseApiRequest()->getWhereNot(), $model);
         if (Helper::BaseApiRequest()->getWhere()) $model = self::whereQueryBuilder(Helper::BaseApiRequest()->getWhere(), $model);
         if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
@@ -17,7 +17,7 @@ trait BaseModel
         return $model;
     }
 
-    static function alias($fields = null)
+    static function alias($table,$fields = null)
     {
         $columns = array_keys(self::$schema);
         if ($fields == "*" || empty($fields)) {
@@ -27,8 +27,11 @@ trait BaseModel
             $newFields = array_filter($columns, function ($item) use ($fields) {
                 return in_array($item, $fields);
             });
+            if(empty($newFields)) $newFields = $columns;
         }
-        if (empty($newFields)) $newFields = "*";
+        $newFields = array_map(function ($item) use($table){
+            return "$table.$item";
+        },$newFields);
         return $newFields;
     }
 

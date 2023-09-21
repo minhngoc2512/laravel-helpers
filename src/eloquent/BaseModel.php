@@ -41,7 +41,7 @@ trait BaseModel
             throw new \Exception(self::class . ': Model class not define $field_schema');
         }
         $options = explode(',', $where);
-        $table = (new $model)->table;
+        $table = (new self())->table;
         foreach ($options as $value) {
             $value = explode(" ", $value);
             if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
@@ -75,7 +75,7 @@ trait BaseModel
             throw new \Exception(self::class . ': Model class not define $field_schema');
         }
         $options = explode(',', $where);
-        $table = (new $model)->table;
+        $table = (new self())->table;
         foreach ($options as $value) {
             $value = explode(" ", $value);
             if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
@@ -128,7 +128,7 @@ trait BaseModel
 
     static function fullTextSearch($model, $keyword, $field)
     {
-        $table = (new $model)->table;
+        $table = (new self())->table;
         if (
             key_exists($field, self::$schema)
             && !empty($keyword)
@@ -151,7 +151,7 @@ trait BaseModel
 
     static function orderByQueryBuilder($order_by, $model)
     {
-        $table = (new $model)->table;
+        $table = (new self())->table;
         if (empty(self::$schema)) {
             throw new \Exception(self::class . ': Model class not define $field_schema');
         }

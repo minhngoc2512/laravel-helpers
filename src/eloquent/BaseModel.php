@@ -41,12 +41,13 @@ trait BaseModel
             throw new \Exception(self::class . ': Model class not define $field_schema');
         }
         $options = explode(',', $where);
+        $table = (new $model)->table;
         foreach ($options as $value) {
             $value = explode(" ", $value);
             if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
                 $data_column = self::$schema[$value[0]];
                 $type = $data_column['type'];
-                $column_name = $value[0];
+                $column_name = $table.".".$value[0];
                 switch ($type) {
                     case 'int':
                         $value[1] = (int)$value[1];
@@ -74,6 +75,7 @@ trait BaseModel
             throw new \Exception(self::class . ': Model class not define $field_schema');
         }
         $options = explode(',', $where);
+        $table = (new $model)->table;
         foreach ($options as $value) {
             $value = explode(" ", $value);
             if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
@@ -83,16 +85,16 @@ trait BaseModel
                 switch ($type) {
                     case 'int':
                         $value[1] = (int)$value[1];
-                        $model = $model->where($column_name, '!=', $value[1]);
+                        $model = $model->where($table.".".$column_name, '!=', $value[1]);
                         break;
                     case 'double':
                         $value[1] = (double)$value[1];
-                        $model = $model->where($column_name, '!=', $value[1]);
+                        $model = $model->where($table.".".$column_name, '!=', $value[1]);
                         break;
                     case 'string':
                         $value[1] = trim($value[1]);
                         if (in_array($value[1], $data_column['values'])) {
-                            $model = $model->where($column_name, '!=', $value[1]);
+                            $model = $model->where($table.".".$column_name, '!=', $value[1]);
                         }
                         break;
                 }
@@ -126,13 +128,14 @@ trait BaseModel
 
     static function fullTextSearch($model, $keyword, $field)
     {
+        $table = (new $model)->table;
         if (
             key_exists($field, self::$schema)
             && !empty($keyword)
             && isset(self::$schema[$field]['fulltext_search'])
             && self::$schema[$field]['fulltext_search'] == true
         ) {
-            return $model->whereRaw("MATCH($field) AGAINST('$keyword')");
+            return $model->whereRaw("MATCH($table.$field) AGAINST('$keyword')");
         }
         return $model;
     }
@@ -148,6 +151,7 @@ trait BaseModel
 
     static function orderByQueryBuilder($order_by, $model)
     {
+        $table = (new $model)->table;
         if (empty(self::$schema)) {
             throw new \Exception(self::class . ': Model class not define $field_schema');
         }
@@ -161,7 +165,7 @@ trait BaseModel
                 continue;
             }
 
-            $model->orderBy($field, $type_order);
+            $model->orderBy($table.".".$field, $type_order);
 
         }
         return $model;

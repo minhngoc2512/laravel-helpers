@@ -109,7 +109,7 @@ function getUserBy Api(){
 - ``limit`` : ``limit=30`` (mặc định là 30)
 - ``page`` : ``page=1`` (mặc định là 1)
 - ``ofset``: ``offset=30`` (mặc định sẽ tính từ tham số ``limit`` và ``page``)
-- ``order_by`` : ``order_by=column_1+desc,column_2+asc,...``
+- ``order_by`` : ``order_by=field_1+desc,field_2+asc,...``
 - ``field_search``: ``field_search=column_search`` (Trường tìm kiếm, đi kèm với ``field_search``)
 - ``keyword`` : ``keyword=something`` (Từ khóa tìm kiếm, đi kèm với ``keyword``)
 - ``with`` : ``with=relashtionship_1+field_1,field_2-relashtionship_2+field_1,field_2``

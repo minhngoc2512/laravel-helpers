@@ -3,6 +3,7 @@
 namespace Ngocnm\LaravelHelpers;
 
 use Illuminate\Support\ServiceProvider;
+use Ngocnm\LaravelHelpers\command\AutoDeployMultiServer;
 
 class HelperServiceProvider extends ServiceProvider
 {
@@ -18,6 +19,11 @@ class HelperServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/config/helper.php' => config_path('helper.php'),
         ],'helper_config');
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                AutoDeployMultiServer::class
+            ]);
+        }
     }
 
     /**

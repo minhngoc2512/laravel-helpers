@@ -24,6 +24,40 @@ protected $middlewareGroups = [
 php artisan vendor:publish --tag=helper_config
 # Vị trí file config  config/helper.php
 ```
+- ``config/helper.php``
+```php 
+<?php
+return [
+    'paginate' => [
+        'page_max' => 30,
+        'limit_max' => 100
+    ],
+    'deploy' => [
+        'commands' => [
+            [
+                'enable' => true,
+                'description' => 'Update code',
+                'folder' => '/var/www/html/code/', //folder run command
+                'cmd' => [
+                    'git pull origin master',
+                    'composer update --no-dev'
+                ],
+                'user' => '',//User run command (default user ssh)
+                'ask' => false
+            ]
+        ],
+        'servers' => [
+            [
+                'enable' => true,
+                'name' => 'ai_master',
+                'ip' => '127.0.0.1',
+                'user_name' => 'ubuntu'
+            ]
+        ]
+    ]
+];
+
+```
 
 - Cấu hình trong class ``model``
 
@@ -144,4 +178,10 @@ class UserLog extends Model
 ```php
 Ngocnm\LaravelHelpers\Helper::BaseApiRequest()->setLimitMax(100);
 Ngocnm\LaravelHelpers\Helper::BaseApiRequest()->setPageMax(100);
+```
+## Tự động pull code , run command trên nhiều server
+- Tùy chình tham số ``deploy`` trong file ``config/helper.php``
+- Thêm ssh key remote giữa các ``server master`` và các ``server cluster``
+```bash 
+php artisan helper:deploy-app
 ```

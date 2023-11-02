@@ -80,6 +80,6 @@ class AutoDeployMultiServer extends Command
 
         $command_return = array_merge($command_return,$command['cmd']);
 
-        return  $connect." ".implode(' && ',$command_return);
+        return  $connect." \" ".implode(' && ',$command_return)." \"";
     }
 }

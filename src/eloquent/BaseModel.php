@@ -99,7 +99,7 @@ trait BaseModel
                 },$values);
                 $values = array_unique($values);
                 if(count($values)!=0){
-                    $model = $model->whereIn($table.".".$column, '=', $values);
+                    $model = $model->whereIn($column, $values);
                 }
             }
         }

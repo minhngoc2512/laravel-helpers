@@ -38,13 +38,29 @@ class RequestHelper
             }
         }
 
-        if (Request::has('fields')) $this->fields = Request::input('fields');
-        if (Request::has('where')) $this->where = urldecode(Request::input('where'));
-        if (Request::has('where_not')) $this->where_not = urldecode(Request::input('where_not'));
-        if (Request::has('where_in')) $this->where_in = urldecode(Request::input('where_in'));
-        if (Request::has('where_range')) $this->where_range = urldecode(Request::input('where_range'));
-        if (Request::has('order_by')) $this->order_by = urldecode(Request::input('order_by'));
-        if (Request::has('with')) $this->with = trim(urldecode(Request::input('with')));
+        if (Request::has('fields')&&is_string(Request::input('fields'))) $this->fields = Request::input('fields');
+        if (Request::has('where')&&is_string(Request::input('where'))) $this->where = urldecode(Request::input('where'));
+        if (Request::has('where_not')&&is_string(Request::input('where_not'))) $this->where_not = urldecode(Request::input('where_not'));
+        if (Request::has('where_in')){
+            $where_in = Request::input('where_in');
+            if(is_string($where_in)){
+                $this->where_in  = urldecode($where_in);
+            }else if(is_array($where_in)){
+                $where_in = array_map(function ($item){
+                    if(!is_string($item)) return null;
+                    $item = urldecode($item);
+                    return $item;
+                },$where_in);
+                $where_in = array_filter($where_in);
+                if(count($where_in)!=0){
+                    $this->where_in = $where_in;
+                }
+            }
+
+        }
+        if (Request::has('where_range')&&is_string(Request::input('where_range'))) $this->where_range = urldecode(Request::input('where_range'));
+        if (Request::has('order_by')&&is_string(Request::input('order_by'))) $this->order_by = urldecode(Request::input('order_by'));
+        if (Request::has('with')&&is_string(Request::input('with'))) $this->with = trim(urldecode(Request::input('with')));
         if (Request::has('limit')) {
             $limit = (int)Request::input('limit');
             if ($limit < 1 || $limit > config('helper.paginate.limit_max')) {
@@ -58,7 +74,7 @@ class RequestHelper
         } else {
             $this->offset = $this->limit * $this->page - $this->limit;
         }
-        if(Request::has('field_search')&&Request::has('keyword')&&!empty(Request::input('keyword'))){
+        if(Request::has('field_search')&&Request::has('keyword')&&!empty(Request::input('keyword'))&&is_string(Request::input('keyword'))){
             $keyword = StringHelper::filter(Request::input('keyword'));
             if(!empty($keyword)){
                 $this->keyword = $keyword;

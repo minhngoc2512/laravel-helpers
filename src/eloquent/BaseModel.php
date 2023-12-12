@@ -11,6 +11,7 @@ trait BaseModel
         $model = $model::select(self::alias((new $model)->table,Helper::BaseApiRequest()->getFields()));
         if (Helper::BaseApiRequest()->getWhereNot()) $model = self::whereNotQueryBuilder(Helper::BaseApiRequest()->getWhereNot(), $model);
         if (Helper::BaseApiRequest()->getWhere()) $model = self::whereQueryBuilder(Helper::BaseApiRequest()->getWhere(), $model);
+        if (Helper::BaseApiRequest()->getWhereIn()) $model = self::whereInQueryBuilder(Helper::BaseApiRequest()->getWhereIn(), $model);
         if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
         if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model, Helper::BaseApiRequest()->getKeywordSearch(), Helper::BaseApiRequest()->getFieldSearch());
         if (Helper::BaseApiRequest()->getOrderBy()) $model = self::orderByQueryBuilder(Helper::BaseApiRequest()->getOrderBy(), $model);
@@ -20,7 +21,7 @@ trait BaseModel
     static function alias($table,$fields = null)
     {
         $columns = array_keys(self::$schema);
-        if ($fields == "*" || empty($fields)) {
+        if ($fields == "*" || empty($fields) || !is_string($fields)) {
             $newFields = $columns;
         } else {
             $fields = explode(',', $fields);
@@ -63,6 +64,42 @@ trait BaseModel
                             $model = $model->where($column_name, $value[1]);
                         }
                         break;
+                }
+            }
+        }
+        return $model;
+    }
+
+    static function whereInQueryBuilder($where, $model){
+        if (empty(self::$schema)) {
+            throw new \Exception(self::class . ': Model class not define $field_schema');
+        }
+        $where_list = is_string($where)?[$where]:$where;
+        $table = (new self())->table;
+        foreach ($where_list as $where_in){
+            $value = explode(" ", $where_in);
+            if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)){
+                $column = "{$table}.{$value[0]}";
+                $data_column = self::$schema[$value[0]];
+                $type = $data_column['type'];
+                $values = explode(",",$value[1]);
+                $values = array_map(function ($item) use($type){
+                    switch ($type){
+                        case 'int':
+                            $item = (int) $item;
+                            break;
+                        case 'double':
+                            $item = (double) $item;
+                            break;
+                        case 'string':
+                            $item = trim($item);
+                            break;
+                    }
+                    return (int) $item;
+                },$values);
+                $values = array_unique($values);
+                if(count($values)!=0){
+                    $model = $model->whereIn($table.".".$column, '=', $values);
                 }
             }
         }

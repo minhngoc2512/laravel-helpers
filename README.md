@@ -140,6 +140,7 @@ function getUserBy Api(){
 - ``select`` : ``fields=field_1,field_2,field_3,...``
 - ``where`` : ``where=field_1+condition_1,field_2+condition_2,...``
 - ``where_not`` : ``where_not=field_1+condition_1,field_2+condition_2,...``
+- ``where_in`` : ``where_in=field_1+condition_1,field_2+condition_2,...`` hoặc ``where_in[]=field_1+condition_1,field_2+condition_2&where_in[]=field_2+condition_3,field_3+condition_4``
 - ``limit`` : ``limit=30`` (mặc định là 30)
 - ``page`` : ``page=1`` (mặc định là 1)
 - ``ofset``: ``offset=30`` (mặc định sẽ tính từ tham số ``limit`` và ``page``)

@@ -194,7 +194,9 @@ trait BaseModel
         }
         $options = explode(',', $order_by);
         foreach ($options as $value) {
-            list($field, $type_order) = explode(" ", $value);
+            $value =  explode(" ", $value);
+            if(count($value)!=2) continue;
+            list($field, $type_order) = $value;
             if (empty($type_order) || !in_array($type_order, ['asc', 'desc'])) continue;
             if (!key_exists($field, self::$schema)
                 || !isset(self::$schema[$field]['sort'])

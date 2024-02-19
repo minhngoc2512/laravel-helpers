@@ -1,5 +1,6 @@
 <?php
 return [
+    'log_query' => env('HELPER_LOG_QUERY',false),
     'paginate' => [
         'page_max' => 30,
         'limit_max'=> 100

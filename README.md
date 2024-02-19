@@ -4,8 +4,9 @@ composer require ngocnm/laravel_helpers
 ```
 ### 2. Cấu hình với laravel
 - Register Service Provider
+
 ```php
-Ngocnm\LaravelHelpers\HelperServiceProvider::class
+\Ngocnm\LaravelHelpers\providers\HelperServiceProvider::class
 ```
 
 - Thêm ``middleware`` trong group ``api`` trong file ``app/Http/Kernel.php``:
@@ -28,6 +29,7 @@ php artisan vendor:publish --tag=helper_config
 ```php 
 <?php
 return [
+    'log_query' => env('HELPER_LOG_QUERY',false),
     'paginate' => [
         'page_max' => 30,
         'limit_max' => 100
@@ -173,16 +175,38 @@ class UserLog extends Model
 }
 ```
 
-## Tùy chỉnh
+## 5. Tùy chỉnh
 - Tùy chỉnh cấu hình ``limit_max`` , ``page_max``;
 
 ```php
 Ngocnm\LaravelHelpers\Helper::BaseApiRequest()->setLimitMax(100);
 Ngocnm\LaravelHelpers\Helper::BaseApiRequest()->setPageMax(100);
 ```
-## Tự động pull code , run command trên nhiều server
+## 6. Tự động pull code , run command trên nhiều server
 - Tùy chình tham số ``deploy`` trong file ``config/helper.php``
 - Thêm ssh key remote giữa các ``server master`` và các ``server cluster``
 ```bash 
 php artisan helper:deploy-app
+```
+## 7. Log query cho api
+- Cấu hình ``env``:
+```dotenv
+HELPER_QUERY_LOG=true
+```
+- Thêm middleware ``api``:
+```php
+protected $middlewareGroups = [
+    ...,
+    'api' => [
+        ...,
+        LogQueryForApi::class
+    ],
+];
+```
+- Response api sẽ trả về bao gồm tham số ``log_query``:
+```json
+{
+  "data": {},
+  "query_log": {}
+}
 ```

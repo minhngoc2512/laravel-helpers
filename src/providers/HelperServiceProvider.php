@@ -1,6 +1,6 @@
 <?php
 
-namespace Ngocnm\LaravelHelpers;
+namespace Ngocnm\LaravelHelpers\providers;
 
 use Illuminate\Support\ServiceProvider;
 use Ngocnm\LaravelHelpers\command\AutoDeployMultiServer;
@@ -23,6 +23,9 @@ class HelperServiceProvider extends ServiceProvider
             $this->commands([
                 AutoDeployMultiServer::class
             ]);
+        }
+        if(config('hepler.log_query')==true) {
+            \DB::enableQueryLog();
         }
     }
 

@@ -17,14 +17,14 @@ class HelperServiceProvider extends ServiceProvider
     {
 //        $this->mer
         $this->publishes([
-            __DIR__.'/../config/helper.php' => config_path('helper.php'),
-        ],'helper_config');
+            __DIR__ . '/../config/helper.php' => config_path('helper.php'),
+        ], 'helper_config');
         if ($this->app->runningInConsole()) {
             $this->commands([
                 AutoDeployMultiServer::class
             ]);
         }
-        if(config('hepler.log_query')==true) {
+        if (env('HELPER_LOG_QUERY') == true) {
             \DB::enableQueryLog();
         }
     }
@@ -37,7 +37,7 @@ class HelperServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/helper.php', 'helper'
+            __DIR__ . '/../config/helper.php', 'helper'
         );
     }
 

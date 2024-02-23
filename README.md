@@ -70,6 +70,13 @@ return [
 ```dotenv
 SLACK_ERROR_URL=
 SLACK_LOG_URL=
+IP_SERVER=
+APP_NAME=
+```
+- Thêm vào config/app.php:
+```php
+    'ip_server' => env('IP_SERVER', 'localhost'),
+    'app_name' => env('APP_NAME0', 'localhost'),
 ```
 
 - Cấu hình trong class ``model``
@@ -108,6 +115,15 @@ class User {
         ]
     ];
 }
+```
+- Nếu this->app->singleton không hoạt động thì thêm vào Exceptions/Handler:
+```php
+    public function register(): void
+    {
+        $this->reportable(function (Throwable $e) {
+            \Ngocnm\LaravelHelpers\exceptions\SendLog::SendLog($e);
+        }
+    }
 ```
 
 Mô tả :

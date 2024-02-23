@@ -2,8 +2,10 @@
 
 namespace Ngocnm\LaravelHelpers\providers;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\ServiceProvider;
 use Ngocnm\LaravelHelpers\command\AutoDeployMultiServer;
+use Ngocnm\LaravelHelpers\exceptions\Handler;
 
 class HelperServiceProvider extends ServiceProvider
 {
@@ -39,6 +41,9 @@ class HelperServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/helper.php', 'helper'
         );
+        if (config('helper.log.enable')){
+            $this->app->singleton(ExceptionHandler::class, Handler::class);
+        }
     }
 
 }

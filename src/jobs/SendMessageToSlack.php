@@ -36,9 +36,9 @@ class SendMessageToSlack implements ShouldQueue
     public function handle()
     {
         try {
-            $url_slack = config('helper.jobs.slack.slack_error_url');
+            $url_slack = config('helper.log.connections.slack.slack_error_url');
             if ($this->type == 'log') {
-                $url_slack = config('helper.jobs.slack.slack_log_url');
+                $url_slack = config('helper.log.connections.slack.slack_log_url');
             }
             if (empty($url_slack)) {
                 Log::error("Not found url slack in job SendMessageToSlack");

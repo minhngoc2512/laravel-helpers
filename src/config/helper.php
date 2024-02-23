@@ -26,5 +26,12 @@ return [
                 'user_name' => 'ubuntu'
             ]
         ]
+    ],
+    'jobs' => [
+        'slack' => [
+            'name' => 'Send Message To Slack',
+            'slack_error_url' => env("SLACK_ERROR_URL"),
+            'slack_log_url'=>env("SLACK_LOG_URL"),
+        ],
     ]
 ];

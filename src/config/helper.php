@@ -30,6 +30,7 @@ return [
     'log' => [
         'driver' => env("HELPER_LOG_DRIVER", 'slack'),
         'enable' => env("HELPER_LOG_ENABLE", true),
+        'name_queue' => env('HELPER_LOG_QUEUE_NAME', 'send-log'),
         'connections' => [
             'slack' => [
                 'name' => 'Send Log To Slack',

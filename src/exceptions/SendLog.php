@@ -19,7 +19,7 @@ class SendLog
             $message .= "\n- Date: " . date('H:i:s d/m/Y');
             $message .= "\n`" . $e->getFile() . "(" . $e->getLine() . ")`\n";
             $message .= "```" . json_encode(data_get($e->getTrace(), '0', null)) . "```";
-            dispatch(new SendMessageToSlack($message, 'error'));
+            dispatch(new SendMessageToSlack($message, 'error'))->onQueue(config('helper.log.name_queue'));
         }
     }
 }

@@ -54,10 +54,35 @@ return [
                 'ip' => '127.0.0.1',
                 'user_name' => 'ubuntu'
             ]
+        ],
+    ],
+    'log' => [
+        'driver' => env("HELPER_LOG_DRIVER", 'slack'),
+        'enable' => env("HELPER_LOG_ENABLE", true),
+        'connections' => [
+            'slack' => [
+                'name' => 'Send Message To Slack',
+                'slack_error_url' => env("SLACK_ERROR_URL"),
+                'slack_log_url'=>env("SLACK_LOG_URL"),
+            ],
         ]
     ]
 ];
 
+```
+- Cấu hình env:
+```dotenv
+SLACK_ERROR_URL=
+SLACK_LOG_URL=
+HELPER_LOG_DRIVER=
+HELPER_LOG_ENABLE=
+IP_SERVER=
+APP_NAME=
+```
+- Thêm vào config/app.php:
+```php
+    'ip_server' => env('IP_SERVER', 'localhost'),
+    'app_name' => env('APP_NAME0', 'localhost'),
 ```
 
 - Cấu hình trong class ``model``
@@ -96,6 +121,15 @@ class User {
         ]
     ];
 }
+```
+- Nếu this->app->singleton không hoạt động thì thêm vào Exceptions/Handler:
+```php
+    public function register(): void
+    {
+        $this->reportable(function (Throwable $e) {
+            \Ngocnm\LaravelHelpers\exceptions\SendLog::SendLog($e);
+        }
+    }
 ```
 
 Mô tả :
@@ -208,4 +242,26 @@ protected $middlewareGroups = [
   "data": {},
   "query_log": {}
 }
+```
+
+## 8. Cấu hình job Send Message To Slack cho server
+- Cấu hình supervisor:
+```bash
+cd /etc/supervisor/conf.d
+vim send-log.conf
+```
+- Copy đoạn cấu hình:
+```bash
+[program:send-log]
+process_name=%(program_name)s_%(process_num)02d
+command=/usr/bin/php /path/to/artisan queue:work --queue=default --sleep=3  --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=eztech
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/log/supervisor/send-log.log
+stopwaitsecs=3600
 ```

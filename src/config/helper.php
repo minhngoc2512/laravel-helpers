@@ -26,5 +26,16 @@ return [
                 'user_name' => 'ubuntu'
             ]
         ]
+    ],
+    'log' => [
+        'driver' => env("HELPER_LOG_DRIVER", 'slack'),
+        'enable' => env("HELPER_LOG_ENABLE", true),
+        'connections' => [
+            'slack' => [
+                'name' => 'Send Log To Slack',
+                'slack_error_url' => env("SLACK_ERROR_URL"),
+                'slack_log_url'=>env("SLACK_LOG_URL"),
+            ],
+        ]
     ]
 ];

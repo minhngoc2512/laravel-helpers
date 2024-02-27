@@ -76,6 +76,7 @@ SLACK_ERROR_URL=
 SLACK_LOG_URL=
 HELPER_LOG_DRIVER=
 HELPER_LOG_ENABLE=
+HELPER_LOG_QUEUE_NAME=
 IP_SERVER=
 APP_NAME=
 ```
@@ -254,7 +255,7 @@ vim send-log.conf
 ```bash
 [program:send-log]
 process_name=%(program_name)s_%(process_num)02d
-command=/usr/bin/php /path/to/artisan queue:work --queue=default --sleep=3  --max-time=3600
+command=/usr/bin/php /path/to/artisan queue:work --queue=send-log-slack --sleep=3  --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true

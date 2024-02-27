@@ -32,7 +32,7 @@ return [
         'enable' => env("HELPER_LOG_ENABLE", true),
         'connections' => [
             'slack' => [
-                'name' => 'Send Log To Slack',
+                'name' => env('HELPER_LOG_QUEUE_NAME', 'send-log-slack'),
                 'slack_error_url' => env("SLACK_ERROR_URL"),
                 'slack_log_url'=>env("SLACK_LOG_URL"),
             ],

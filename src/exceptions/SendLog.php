@@ -19,7 +19,8 @@ class SendLog
             $message .= "\n- Date: " . date('H:i:s d/m/Y');
             $message .= "\n`" . $e->getFile() . "(" . $e->getLine() . ")`\n";
             $message .= "```" . json_encode(data_get($e->getTrace(), '0', null)) . "```";
-            dispatch(new SendMessageToSlack($message, 'error'));
+            $config = config('helper.log.connections')[config('helper.log.driver')];
+            dispatch(new SendMessageToSlack($message, 'error'))->onQueue($config['name']);
         }
     }
 }

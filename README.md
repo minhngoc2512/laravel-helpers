@@ -255,7 +255,7 @@ vim send-log.conf
 ```bash
 [program:send-log]
 process_name=%(program_name)s_%(process_num)02d
-command=/usr/bin/php /path/to/artisan queue:work --queue=send-log-slack --sleep=3  --max-time=3600
+command=/usr/bin/php /path/to/artisan queue:work --queue=send-log --sleep=3  --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true

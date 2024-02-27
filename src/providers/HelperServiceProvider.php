@@ -41,9 +41,9 @@ class HelperServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/helper.php', 'helper'
         );
-        if (config('helper.log.enable')){
-            $this->app->singleton(ExceptionHandler::class, Handler::class);
-        }
+//        if (config('helper.log.enable')){
+//            $this->app->singleton(ExceptionHandler::class, Handler::class);
+//        }
     }
 
 }

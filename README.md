@@ -56,12 +56,16 @@ return [
             ]
         ],
     ],
-    'jobs' => [
-        'slack' => [
-            'name' => 'Send Message To Slack',
-            'slack_error_url' => env("SLACK_ERROR_URL"),
-            'slack_log_url'=>env("SLACK_LOG_URL"),
-        ],
+    'log' => [
+        'driver' => env("HELPER_LOG_DRIVER", 'slack'),
+        'enable' => env("HELPER_LOG_ENABLE", true),
+        'connections' => [
+            'slack' => [
+                'name' => 'Send Message To Slack',
+                'slack_error_url' => env("SLACK_ERROR_URL"),
+                'slack_log_url'=>env("SLACK_LOG_URL"),
+            ],
+        ]
     ]
 ];
 
@@ -70,6 +74,8 @@ return [
 ```dotenv
 SLACK_ERROR_URL=
 SLACK_LOG_URL=
+HELPER_LOG_DRIVER=
+HELPER_LOG_ENABLE=
 IP_SERVER=
 APP_NAME=
 ```

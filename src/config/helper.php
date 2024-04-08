@@ -2,7 +2,22 @@
 return [
     'paginate' => [
         'page_max' => 30,
-        'limit_max'=> 100
+        'limit_max' => 100
+    ],
+    'backup' => [
+        'enable' => true,
+        'ask' => false,
+        'database' => [
+            'folder' => '/var/www/html/backup/database',
+            'description' => 'Backup database',
+            'file_name' => 'database_backup.sql',
+            'file_config' => '/home/ubuntu/mysql_config.conf',
+            'database_name' => 'database',
+            'tables' => [
+                'table1',
+                'table2'
+            ],
+        ],
     ],
     'deploy' => [
         'commands' => [
@@ -27,6 +42,7 @@ return [
             ]
         ]
     ],
+    'log_query' => env('HELPER_LOG_QUERY', false),
     'log' => [
         'driver' => env("HELPER_LOG_DRIVER", 'slack'),
         'enable' => env("HELPER_LOG_ENABLE", true),
@@ -35,7 +51,7 @@ return [
             'slack' => [
                 'name' => 'Send Log To Slack',
                 'slack_error_url' => env("SLACK_ERROR_URL"),
-                'slack_log_url'=>env("SLACK_LOG_URL"),
+                'slack_log_url' => env("SLACK_LOG_URL"),
             ],
         ]
     ]

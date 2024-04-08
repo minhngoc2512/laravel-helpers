@@ -48,20 +48,45 @@ class BackupDatabase extends Command
 
                     $file_size = filesize($config['folder'] . "/" . $config['file_name']) / 1000000;
                     if ($file_size <= 100) {
-                        $path = date('/backups/Y/m/d', time()) . '/' . $config['file_name'];
-                        $ok = Storage::put($path, file_get_contents($config['folder'] . "/" . $config['file_name']));
+                        $path_zip = $config['folder'] . "/backups/" . time() . '/' . $config['file_name']. ".zip";
+                        $command_sip = "zip -r " . $path_zip . " " . $config['folder'] . "/" . $config['file_name'];
+                        $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
+                            $this->info($output);
+                        });
+                        $path_storage = "backups/" . time() . '/' . $config['file_name'] . ".zip";
+                        if ($result_zip->successful()) {
+                            $this->info("Run success");
+                        } else {
+                            $this->error("Run fail!");
+                        }
+                        $ok = Storage::disk('r2')->put($path_storage, file_get_contents($path_zip));
                         if (!$ok){
                             $this->error("Upload to storage fail!");
                         }
                         $backup = new BackupFile();
-                        $backup->path = $path;
+                        $backup->path = [
+                            'path_zip' => $path_zip,
+                            'path_storage' => $path_storage,
+                        ];
                         $backup->status = 1;
                         $backup->save();
                         $this->info('Backup save DB success!');
+                        $this->info('Path storage: ' . $path_storage);
+                        $this->info('Path zip: ' . $path_zip);
                     }
                     if ($file_size > 100) {
                         $this->info("File size is too large, please check it!");
-
+                        $path_zip = $config['folder'] . "/backups/" . time() . '/' . $config['file_name']. ".zip";
+                        $command_sip = "zip -r " . $path_zip . " " . $config['folder'] . "/" . $config['file_name'];
+                        $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
+                            $this->info($output);
+                        });
+                        if ($result_zip->successful()) {
+                            $this->info("Run success");
+                        } else {
+                            $this->error("Run fail!");
+                        }
+                        $folder = (string) time();
                     }
                 }
             } else {

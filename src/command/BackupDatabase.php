@@ -74,27 +74,6 @@ class BackupDatabase extends Command
             $file_size = filesize($path_zip) / 1000000;
 
             if ($file_size <= 100) {
-//                $command_create_folder = "mkdir " . $config['database']['folder'] . '/' . $folder;
-//                $result_create_folder = Process::timeout(300)->run($command_create_folder, function (string $type, string $output) {
-//                    $this->info($output);
-//                });
-//                if ($result_create_folder->successful()) {
-//                    $this->info("Run create folder success");
-//                } else {
-//                    $this->error("Run create folder fail!");
-//                }
-//
-//                $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
-//                $command_sip = "zip -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
-//                $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
-//                    $this->info($output);
-//                });
-//                $path_storage = "backups/" . $folder . '/' . $config['database']['file_name'] . ".zip";
-//                if ($result_zip->successful()) {
-//                    $this->info("Run success");
-//                } else {
-//                    $this->error("Run fail!");
-//                }
                 $ok = Storage::disk($config['backup_driver'])->put($path_storage, file_get_contents($path_zip));
                 if (!$ok) {
                     $this->error("Upload to storage fail!");
@@ -113,18 +92,6 @@ class BackupDatabase extends Command
             }
             if ($file_size > 100) {
                 $this->info("File size is too large, please check it!");
-//                $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
-//                $command_sip = "zip -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
-//                $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
-//                    $this->info($output);
-//                });
-//                if ($result_zip->successful()) {
-//                    $this->info("Run zip file success");
-//                } else {
-//                    $this->error("Run zip file fail!");
-//                }
-
-//                $folder = (string)time();
                 $command_create_folder = "mkdir " . $config['database']['folder'] . "/" . $folder . "/split";
                 $result_create_folder = Process::timeout(300)->run($command_create_folder, function (string $type, string $output) {
                     $this->info($output);
@@ -165,6 +132,31 @@ class BackupDatabase extends Command
                 $this->info('Path storage: ' . "backups/" . $folder . '/split');
                 $this->info('Path zip: ' .  $config['database']['folder'] . "/" . $folder . '/split');
             }
+
+            $number_backups = $config['number_of_backup'];
+            $backups = BackupFile::orderBy('created_at', 'desc')->get();
+            $i = 1;
+            foreach ($backups as $backup) {
+                $i += 1;
+                if ($i > $number_backups){
+                    $path_zip = $backup->path['path_zip'];
+                    if ($backup->path['number_file'] == 'multiple'){
+                        $command_remove = "rm -r -f " . $path_zip;
+                    }elseif ($backup->path['number_file'] == 1){
+                        $command_remove = "rm " . $path_zip;
+                    }
+                    $result_remove_file = Process::timeout(300)->run($command_remove, function (string $type, string $output) {
+                        $this->info($output);
+                    });
+                    if ($result_remove_file->successful()) {
+                        $this->info("Run remove file success");
+                    } else {
+                        $this->error("Run remove file fail!");
+                    }
+                    $backup->delete();
+                }
+            }
+
         } else {
             $this->warn("Backup disabled!");
         }

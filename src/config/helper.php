@@ -10,6 +10,7 @@ return [
         'backup_driver' => env('HELPER_BACKUP_DRIVER', 'local'),
         'mysqldump_path' => env('HELPER_MYSQLDUMP_PATH', '/usr/bin/mysqldump'),
         'zip_path' => env('HELPER_ZIP_PATH', '/usr/bin/zip'),
+        'number_of_backup' => env('HELPER_NUMBER_OF_BACKUP', 5),
         'database' => [
             'folder' => env('HELPER_BACKUP_FOLDER', '/var/www/html/backup/database'),
             'description' => 'Backup database',

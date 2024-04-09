@@ -37,7 +37,7 @@ class BackupDatabase extends Command
 //                        $this->warn("Canceled!");
 //                        return;
 //                    }
-            $command = $this->generateCommand($config['database']);
+            $command = $this->generateCommand($config);
             $this->info("Running command : $command");
             $result = Process::timeout(300)->run($command, function (string $type, string $output) {
                 $this->info($output);
@@ -48,37 +48,60 @@ class BackupDatabase extends Command
                 $this->error("Run fail!");
             }
 
-            $file_size = filesize($config['database']['folder'] . "/" . $config['database']['file_name']) / 1000000;
+//            $file_size = filesize($config['database']['folder'] . "/" . $config['database']['file_name']) / 1000000;
             $folder = (string)time();
+            $command_create_folder = "mkdir " . $config['database']['folder'] . '/' . $folder;
+            $result_create_folder = Process::timeout(300)->run($command_create_folder, function (string $type, string $output) {
+                $this->info($output);
+            });
+            if ($result_create_folder->successful()) {
+                $this->info("Run create folder success");
+            } else {
+                $this->error("Run create folder fail!");
+            }
+
+            $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
+            $command_sip = $config['zip_path'] . " -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
+            $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
+                $this->info($output);
+            });
+            $path_storage = "backups/" . $folder . '/' . $config['database']['file_name'] . ".zip";
+            if ($result_zip->successful()) {
+                $this->info("Run success");
+            } else {
+                $this->error("Run fail!");
+            }
+            $file_size = filesize($path_zip) / 1000000;
 
             if ($file_size <= 100) {
-                $command_create_folder = "mkdir " . $config['database']['folder'] . '/' . $folder;
-                $result_create_folder = Process::timeout(300)->run($command_create_folder, function (string $type, string $output) {
-                    $this->info($output);
-                });
-                if ($result_create_folder->successful()) {
-                    $this->info("Run create folder success");
-                } else {
-                    $this->error("Run create folder fail!");
-                }
-
-                $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
-                $command_sip = "zip -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
-                $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
-                    $this->info($output);
-                });
-                $path_storage = "backups/" . $folder . '/' . $config['database']['file_name'] . ".zip";
-                if ($result_zip->successful()) {
-                    $this->info("Run success");
-                } else {
-                    $this->error("Run fail!");
-                }
+//                $command_create_folder = "mkdir " . $config['database']['folder'] . '/' . $folder;
+//                $result_create_folder = Process::timeout(300)->run($command_create_folder, function (string $type, string $output) {
+//                    $this->info($output);
+//                });
+//                if ($result_create_folder->successful()) {
+//                    $this->info("Run create folder success");
+//                } else {
+//                    $this->error("Run create folder fail!");
+//                }
+//
+//                $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
+//                $command_sip = "zip -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
+//                $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
+//                    $this->info($output);
+//                });
+//                $path_storage = "backups/" . $folder . '/' . $config['database']['file_name'] . ".zip";
+//                if ($result_zip->successful()) {
+//                    $this->info("Run success");
+//                } else {
+//                    $this->error("Run fail!");
+//                }
                 $ok = Storage::disk($config['backup_driver'])->put($path_storage, file_get_contents($path_zip));
                 if (!$ok) {
                     $this->error("Upload to storage fail!");
                 }
                 $backup = new BackupFile();
                 $backup->path = [
+                    'number_file' => 1,
                     'path_zip' => $path_zip,
                     'path_storage' => $path_storage,
                 ];
@@ -90,19 +113,19 @@ class BackupDatabase extends Command
             }
             if ($file_size > 100) {
                 $this->info("File size is too large, please check it!");
-                $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
-                $command_sip = "zip -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
-                $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
-                    $this->info($output);
-                });
-                if ($result_zip->successful()) {
-                    $this->info("Run zip file success");
-                } else {
-                    $this->error("Run zip file fail!");
-                }
+//                $path_zip = $config['database']['folder'] . "/" . $folder . '/' . $config['database']['file_name'] . ".zip";
+//                $command_sip = "zip -r " . $path_zip . " " . $config['database']['folder'] . "/" . $config['database']['file_name'];
+//                $result_zip = Process::timeout(300)->run($command_sip, function (string $type, string $output) {
+//                    $this->info($output);
+//                });
+//                if ($result_zip->successful()) {
+//                    $this->info("Run zip file success");
+//                } else {
+//                    $this->error("Run zip file fail!");
+//                }
 
-                $folder = (string)time();
-                $command_create_folder = "mkdir " . $config['database']['folder'] . "/backups/" . $folder;
+//                $folder = (string)time();
+                $command_create_folder = "mkdir " . $config['database']['folder'] . "/" . $folder . "/split";
                 $result_create_folder = Process::timeout(300)->run($command_create_folder, function (string $type, string $output) {
                     $this->info($output);
                 });
@@ -112,7 +135,7 @@ class BackupDatabase extends Command
                     $this->error("Run create folder fail!");
                 }
 
-                $command_split = "zip -s 100m " . $path_zip . " --out " . $config['database']['folder'] . "/" . $folder . "/" . $config['database']['file_name'] . ".zip";
+                $command_split = $config['zip_path'] . " -s 100m " . $path_zip . " --out " . $config['database']['folder'] . "/" . $folder . "/split/" . $config['database']['file_name'] . ".zip";
                 $result_split = Process::timeout(300)->run($command_split, function (string $type, string $output) {
                     $this->info($output);
                 });
@@ -122,24 +145,25 @@ class BackupDatabase extends Command
                     $this->error("Run split file fail!");
                 }
 
-                $files = File::allFiles($config['database']['folder'] . "/" . $folder);
+                $files = File::allFiles($config['database']['folder'] . "/" . $folder . '/split');
                 foreach ($files as $file) {
-                    $path_storage = "backups/" . $folder . '/' . $file->getFilename();
+                    $path_storage = "backups/" . $folder . '/split/' . $file->getFilename();
                     $ok = Storage::disk($config['backup_driver'])->put($path_storage, file_get_contents($file));
                     if (!$ok) {
                         $this->error("Upload to storage fail!");
                     }
-                    $backup = new BackupFile();
-                    $backup->path = [
-                        'path_zip' => $file->getPathname(),
-                        'path_storage' => $path_storage,
-                    ];
-                    $backup->status = 1;
-                    $backup->save();
-                    $this->info('Backup save DB file more than 100MB success!');
-                    $this->info('Path storage: ' . $path_storage);
-                    $this->info('Path zip: ' . $file->getPathname());
                 }
+                $backup = new BackupFile();
+                $backup->path = [
+                    'number_file' => 'multiple',
+                    'path_zip' => $config['database']['folder'] . "/" . $folder . '/split',
+                    'path_storage' => "backups/" . $folder . '/split',
+                ];
+                $backup->status = 1;
+                $backup->save();
+                $this->info('Backup save DB file more than 100MB success!');
+                $this->info('Path storage: ' . "backups/" . $folder . '/split');
+                $this->info('Path zip: ' .  $config['database']['folder'] . "/" . $folder . '/split');
             }
         } else {
             $this->warn("Backup disabled!");
@@ -156,10 +180,10 @@ class BackupDatabase extends Command
     function generateCommand($config): string
     {
         $tables = "";
-        foreach ($config['tables'] as $table) {
+        foreach ($config['database']['tables'] as $table) {
             $tables .= " $table";
         }
-        return "mysqldump --defaults-extra-file={$config['file_config']} {$config['database_name']} {$tables} > {$config['folder']}/{$config['file_name']}";
+        return $config['mysqldump_path'] . " --defaults-extra-file={$config['database']['file_config']} {$config['database']['database_name']} {$tables} > {$config['database']['folder']}/{$config['database']['file_name']}";
     }
 
 }

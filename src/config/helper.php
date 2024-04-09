@@ -5,15 +5,17 @@ return [
         'limit_max' => 100
     ],
     'backup' => [
-        'enable' => true,
+        'enable' => env('HELPER_BACKUP_ENABLE', true),
 //        'ask' => false,
-        'backup_driver' => 'local',
+        'backup_driver' => env('HELPER_BACKUP_DRIVER', 'local'),
+        'mysqldump_path' => env('HELPER_MYSQLDUMP_PATH', '/usr/bin/mysqldump'),
+        'zip_path' => env('HELPER_ZIP_PATH', '/usr/bin/zip'),
         'database' => [
-            'folder' => '/var/www/html/backup/database',
+            'folder' => env('HELPER_BACKUP_FOLDER', '/var/www/html/backup/database'),
             'description' => 'Backup database',
             'file_name' => 'database_backup.sql',
-            'file_config' => '/home/ubuntu/mysql_config.conf',
-            'database_name' => 'database',
+            'file_config' => env('HELPER_MYSQL_CONFIG', '/home/huyct/mysql.conf'),
+            'database_name' => env('HELPER_DATABASE_NAME', 'laravel'),
             'tables' => [
                 'table1',
                 'table2'

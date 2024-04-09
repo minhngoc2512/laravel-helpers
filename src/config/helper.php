@@ -6,7 +6,8 @@ return [
     ],
     'backup' => [
         'enable' => true,
-        'ask' => false,
+//        'ask' => false,
+        'backup_driver' => 'local',
         'database' => [
             'folder' => '/var/www/html/backup/database',
             'description' => 'Backup database',

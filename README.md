@@ -266,3 +266,32 @@ redirect_stderr=true
 stdout_logfile=/var/log/supervisor/send-log.log
 stopwaitsecs=3600
 ```
+
+## 9. Config Backup Database Command
+- Config secret of mysql on Server:
+```bash
+cd /home/ubuntu/
+touch mysql.conf
+
+[client]
+user=root
+password=Test@123456
+```
+- Create folder of backup:
+```bash
+cd /var/www/html/
+mkdir backup
+cd backup
+mkdir database
+```
+- Config .env for backup command:
+```bash
+HELPER_BACKUP_ENABLE=true
+HELPER_BACKUP_DRIVER=local
+HELPER_MYSQLDUMP_PATH=/usr/bin/mysqldump
+HELPER_ZIP_PATH=/usr/bin/zip
+HELPER_NUMBER_OF_BACKUP=5
+HELPER_BACKUP_FOLDER=/var/www/html/backup/database
+HELPER_MYSQL_CONFIG=/home/ubuntu/mysql.conf
+HELPER_DATABASE_NAME=laravel
+```

@@ -5,6 +5,7 @@ namespace Ngocnm\LaravelHelpers\providers;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\ServiceProvider;
 use Ngocnm\LaravelHelpers\command\AutoDeployMultiServer;
+use Ngocnm\LaravelHelpers\command\BackupDatabase;
 use Ngocnm\LaravelHelpers\exceptions\Handler;
 
 class HelperServiceProvider extends ServiceProvider
@@ -17,13 +18,15 @@ class HelperServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-//        $this->mer
         $this->publishes([
             __DIR__ . '/../config/helper.php' => config_path('helper.php'),
+            __DIR__ . '/../migrations/create_backup_files_table.php' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_backup_files_table.php'),
+            __DIR__ . '/../models/BackupFile.php' => app_path('Models/BackupFile.php'),
         ], 'helper_config');
         if ($this->app->runningInConsole()) {
             $this->commands([
-                AutoDeployMultiServer::class
+                AutoDeployMultiServer::class,
+                BackupDatabase::class,
             ]);
         }
         if (env('HELPER_LOG_QUERY') == true) {

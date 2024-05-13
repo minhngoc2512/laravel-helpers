@@ -172,7 +172,7 @@ trait BaseModel
             && isset(self::$schema[$field]['fulltext_search'])
             && self::$schema[$field]['fulltext_search'] == true
         ) {
-            return $model->whereRaw("MATCH($table.$field) AGAINST('$keyword')");
+            return $model->whereRaw("MATCH($table.$field) AGAINST('$keyword' IN BOOLEAN MODE)");
         }
         return $model;
     }

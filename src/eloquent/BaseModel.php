@@ -172,9 +172,35 @@ trait BaseModel
             && isset(self::$schema[$field]['fulltext_search'])
             && self::$schema[$field]['fulltext_search'] == true
         ) {
+            $keyword = self::getFullTextWildcards($keyword);
             return $model->whereRaw("MATCH($table.$field) AGAINST('$keyword' IN BOOLEAN MODE)");
         }
         return $model;
+    }
+
+    static function getFullTextWildcards($term)
+    {
+        // removing symbols used by MySQL
+        $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~'];
+        $term = str_replace($reservedSymbols, '', $term);
+
+        $words = explode(' ', $term);
+
+//        dd($words);
+//
+        foreach ($words as $key => $word) {
+            /*
+             * applying + operator (required word) only big words
+             * because smaller ones are not indexed by mysql
+             */
+            if (strlen($word) >= 2) {
+                $words[$key] = '+' . $word . '*';
+            }
+        }
+
+        $searchTerm = implode(' ', $words);
+
+        return $searchTerm;
     }
 
     static function getFillableCreate()

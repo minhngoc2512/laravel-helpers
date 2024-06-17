@@ -11,6 +11,8 @@ trait BaseModel
         $model = $model::select(self::alias((new $model)->table,Helper::BaseApiRequest()->getFields()));
         if (Helper::BaseApiRequest()->getWhereNot()) $model = self::whereNotQueryBuilder(Helper::BaseApiRequest()->getWhereNot(), $model);
         if (Helper::BaseApiRequest()->getWhere()) $model = self::whereQueryBuilder(Helper::BaseApiRequest()->getWhere(), $model);
+        if (Helper::BaseApiRequest()->getWhereLess()) $model = self::whereLessQueryBuilder(Helper::BaseApiRequest()->getWhereLess(), $model);
+        if (Helper::BaseApiRequest()->getWhereThan()) $model = self::whereThanQueryBuilder(Helper::BaseApiRequest()->getWhereThan(), $model);
         if (Helper::BaseApiRequest()->getWhereIn()) $model = self::whereInQueryBuilder(Helper::BaseApiRequest()->getWhereIn(), $model);
         if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
         if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model, Helper::BaseApiRequest()->getKeywordSearch(), Helper::BaseApiRequest()->getFieldSearch());
@@ -232,6 +234,62 @@ trait BaseModel
 
             $model->orderBy($table.".".$field, $type_order);
 
+        }
+        return $model;
+    }
+
+    static function whereThanQueryBuilder($where, $model)
+    {
+        if (empty(self::$schema)) {
+            throw new \Exception(self::class . ': Model class not define $field_schema');
+        }
+        $options = explode(',', $where);
+        $table = (new self())->table;
+        foreach ($options as $value) {
+            $value = explode(" ", $value);
+            if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
+                $data_column = self::$schema[$value[0]];
+                $type = $data_column['type'];
+                $column_name = $table.".".$value[0];
+                switch ($type) {
+                    case 'int':
+                        $value[1] = (int)$value[1];
+                        $model = $model->where($column_name,'>', $value[1]);
+                        break;
+                    case 'double':
+                        $value[1] = (double)$value[1];
+                        $model = $model->where($column_name,'>', $value[1]);
+                        break;
+                }
+            }
+        }
+        return $model;
+    }
+
+    static function whereLessQueryBuilder($where, $model)
+    {
+        if (empty(self::$schema)) {
+            throw new \Exception(self::class . ': Model class not define $field_schema');
+        }
+        $options = explode(',', $where);
+        $table = (new self())->table;
+        foreach ($options as $value) {
+            $value = explode(" ", $value);
+            if (isset($value[1]) && key_exists($value[0], self::$schema) && (isset(self::$schema[$value[0]]['query_condition']) && self::$schema[$value[0]]['query_condition'] == true)) {
+                $data_column = self::$schema[$value[0]];
+                $type = $data_column['type'];
+                $column_name = $table.".".$value[0];
+                switch ($type) {
+                    case 'int':
+                        $value[1] = (int)$value[1];
+                        $model = $model->where($column_name,'<', $value[1]);
+                        break;
+                    case 'double':
+                        $value[1] = (double)$value[1];
+                        $model = $model->where($column_name,'<', $value[1]);
+                        break;
+                }
+            }
         }
         return $model;
     }

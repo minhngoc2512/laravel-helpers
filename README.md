@@ -194,6 +194,8 @@ function getUserBy Api(){
 ## 4. Các tham số lấy dữ liệu từ api
 - ``select`` : ``fields=field_1,field_2,field_3,...``
 - ``where`` : ``where=field_1+condition_1,field_2+condition_2,...``
+- ``where_less`` : ``where=field_1+condition_1,field_2+condition_2,...``
+- ``where_than`` : ``where=field_1+condition_1,field_2+condition_2,...``
 - ``where_not`` : ``where_not=field_1+condition_1,field_2+condition_2,...``
 - ``where_in`` : ``where_in=field_1+condition_1,field_2+condition_2,...`` hoặc ``where_in[]=field_1+condition_1,field_2+condition_2&where_in[]=field_2+condition_3,field_3+condition_4``
 - ``limit`` : ``limit=30`` (mặc định là 30)

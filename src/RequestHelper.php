@@ -18,6 +18,8 @@ class RequestHelper
     private $where_not = null;
     private $where_in = null;
     private $where_range = null;
+    private $where_less = null;
+    private $where_than = null;
     private $limit = 30;
     private $offset = 0;
     private $order_by = null;
@@ -56,9 +58,10 @@ class RequestHelper
                     $this->where_in = $where_in;
                 }
             }
-
         }
         if (Request::has('where_range')&&is_string(Request::input('where_range'))) $this->where_range = urldecode(Request::input('where_range'));
+        if (Request::has('where_less')&&is_string(Request::input('where_less'))) $this->where_less = urldecode(Request::input('where_less'));
+        if (Request::has('where_than')&&is_string(Request::input('where_than'))) $this->where_than = urldecode(Request::input('where_than'));
         if (Request::has('order_by')&&is_string(Request::input('order_by'))) $this->order_by = urldecode(Request::input('order_by'));
         if (Request::has('with')&&is_string(Request::input('with'))) $this->with = trim(urldecode(Request::input('with')));
         if (Request::has('limit')) {
@@ -138,5 +141,15 @@ class RequestHelper
 
     public function getKeywordSearch(){
         return $this->keyword;
+    }
+
+    public function getWhereLess()
+    {
+        return $this->where_less;
+    }
+
+    public function getWhereThan()
+    {
+        return $this->where_than;
     }
 }

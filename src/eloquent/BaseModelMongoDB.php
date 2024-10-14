@@ -18,7 +18,7 @@ trait BaseModelMongoDB
         if (Helper::BaseApiRequest()->getWhereLess()) $model = self::whereLessQueryBuilder(Helper::BaseApiRequest()->getWhereLess(), $model);
         if (Helper::BaseApiRequest()->getWhereThan()) $model = self::whereThanQueryBuilder(Helper::BaseApiRequest()->getWhereThan(), $model);
         if (Helper::BaseApiRequest()->getWhereIn()) $model = self::whereInQueryBuilder(Helper::BaseApiRequest()->getWhereIn(), $model);
-//        if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
+        if (Helper::BaseApiRequest()->getWith()) $model = self::withQueryBuilder(Helper::BaseApiRequest()->getWith(), $model);
 //        if (Helper::BaseApiRequest()->getKeywordSearch()) $model = self::fullTextSearch($model, Helper::BaseApiRequest()->getKeywordSearch(), Helper::BaseApiRequest()->getFieldSearch());
         if (Helper::BaseApiRequest()->getOrderBy()) $model = self::orderByQueryBuilder(Helper::BaseApiRequest()->getOrderBy(), $model);
         return $model;

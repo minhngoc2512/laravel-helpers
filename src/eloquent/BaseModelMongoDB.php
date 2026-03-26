@@ -70,6 +70,12 @@ trait BaseModelMongoDB
                             $model = $model->where($column_name, $value[1]);
                         }
                         break;
+                    case 'object_id':
+                        $value[1] = (string)$value[1];
+                        $value[1] = preg_replace('/[^A-Za-z0-9]/', '', $value[1]);
+                        $value[1] = new \MongoDB\BSON\ObjectId($value[1]);
+                        $model = $model->where($column_name, $value[1]);
+                        break;
                 }
             }
         }
@@ -100,8 +106,13 @@ trait BaseModelMongoDB
                         case 'string':
                             $item = trim($item);
                             break;
+                        case 'object_id':
+                            $item = (string)$item;
+                            $item = preg_replace('/[^A-Za-z0-9]/', '', $item);
+                            $item = new \MongoDB\BSON\ObjectId($item);
+                            break;
                     }
-                    return (int) $item;
+                    return $item instanceof \MongoDB\BSON\ObjectId ? $item : (int)$item;
                 },$values);
                 $values = array_unique($values);
                 if(count($values)!=0){
@@ -138,6 +149,12 @@ trait BaseModelMongoDB
                         if (in_array($value[1], $data_column['values'])) {
                             $model = $model->where($column_name, '!=', $value[1]);
                         }
+                        break;
+                    case 'object_id':
+                        $value[1] = (string)$value[1];
+                        $value[1] = preg_replace('/[^A-Za-z0-9]/', '', $value[1]);
+                        $value[1] = new \MongoDB\BSON\ObjectId($value[1]);
+                        $model = $model->where($column_name, '!=', $value[1]);
                         break;
                 }
             }
@@ -263,6 +280,12 @@ trait BaseModelMongoDB
                         $value[1] = (double)$value[1];
                         $model = $model->where($column_name,'>', $value[1]);
                         break;
+                    case 'object_id':
+                        $value[1] = (string)$value[1];
+                        $value[1] = preg_replace('/[^A-Za-z0-9]/', '', $value[1]);
+                        $value[1] = new \MongoDB\BSON\ObjectId($value[1]);
+                        $model = $model->where($column_name, '>', $value[1]);
+                        break;
                 }
             }
         }
@@ -290,6 +313,12 @@ trait BaseModelMongoDB
                     case 'double':
                         $value[1] = (double)$value[1];
                         $model = $model->where($column_name,'<', $value[1]);
+                        break;
+                    case 'object_id':
+                        $value[1] = (string)$value[1];
+                        $value[1] = preg_replace('/[^A-Za-z0-9]/', '', $value[1]);
+                        $value[1] = new \MongoDB\BSON\ObjectId($value[1]);
+                        $model = $model->where($column_name, '<', $value[1]);
                         break;
                 }
             }

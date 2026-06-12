@@ -4,6 +4,7 @@ namespace Ngocnm\LaravelHelpers\middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Ngocnm\LaravelHelpers\Helper;
+use Ngocnm\LaravelHelpers\RequestHelper;
 
 class FilterRequestForApi
 {
@@ -16,6 +17,7 @@ class FilterRequestForApi
      */
     public function handle(Request $request, Closure $next)
     {
+        RequestHelper::getInstance()->reset();
         Helper::BaseApiRequest()->filterRequest();
         return $next($request);
     }

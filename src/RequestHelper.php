@@ -29,6 +29,24 @@ class RequestHelper
 
     private $keyword = null;
 
+    public function reset(): void
+    {
+        $this->fields = "*";
+        $this->where = null;
+        $this->keyword = null;
+        $this->field_search = null;
+        $this->with = null;
+        $this->where_not = null;
+        $this->where_range = null;
+        $this->where_in = null;
+        $this->limit = 30;
+        $this->offset = 0;
+        $this->where_less = null;
+        $this->order_by = null;
+        $this->where_than = null;
+        $this->page = 1;
+    }
+    
     public function filterRequest()
     {
         if (Request::has('page')) {
